@@ -23,24 +23,24 @@ module.exports = {
             chainId: 31337,
             // gasPrice: 130000000000,
         },
-        // sepolia: {
-        //     url: SEPOLIA_RPC_URL,
-        //     accounts: [PRIVATE_KEY],
-        //     chainId: 11155111,
-        //     blockConfirmations: 6,
-        // },
-        // bnbtestnet: {
-        //     url: BNBTESTNET_RPC_URL,
-        //     accounts: [PRIVATE_KEY],
-        //     chainId: 97,
-        //     blockConfirmations: 6,
-        // },
-        // mainnet: {
-        //     url: process.env.MAINNET_RPC_URL,
-        //     accounts: [PRIVATE_KEY],
-        //     chainId: 1,
-        //     blockConfirmations: 6,
-        // },
+        sepolia: {
+            url: SEPOLIA_RPC_URL,
+            accounts: [PRIVATE_KEY],
+            chainId: 11155111,
+            blockConfirmations: 3,
+        },
+        bnbtestnet: {
+            url: BNBTESTNET_RPC_URL,
+            accounts: [PRIVATE_KEY],
+            chainId: 97,
+            blockConfirmations: 3,
+        },
+        mainnet: {
+            url: process.env.MAINNET_RPC_URL,
+            accounts: [PRIVATE_KEY],
+            chainId: 1,
+            blockConfirmations: 6,
+        },
     },
     solidity: {
         compilers: [
