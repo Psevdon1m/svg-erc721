@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "base64-sol/base64.sol";
@@ -11,8 +10,9 @@ error DynamicSvgNft_NFT_NOT_EXIST();
 
 contract DynamicSvgNft is ERC721 {
     uint public tokenCounter;
-    string private lowImageUri;
-    string private highImageUri;
+    string public constant NAME = "DynamicPriceNFT";
+    string private bearImageUri;
+    string private bullImageUri;
     string private constant base64EncodedSVGPrefix = "data:image/svg+xml;base64,";
 
     AggregatorV3Interface internal immutable i_priceFeed;
@@ -25,8 +25,8 @@ contract DynamicSvgNft is ERC721 {
         string memory _lowSvg,
         string memory _highSvg
     ) ERC721("Dynamic SVG", "DSVG") {
-        lowImageUri = svgToImageUri(_lowSvg);
-        highImageUri = svgToImageUri(_highSvg);
+        bearImageUri = svgToImageUri(_lowSvg);
+        bullImageUri = svgToImageUri(_highSvg);
         i_priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
@@ -49,9 +49,9 @@ contract DynamicSvgNft is ERC721 {
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         if (!_exists(tokenId)) revert DynamicSvgNft_NFT_NOT_EXIST();
         (, int256 price, , , ) = i_priceFeed.latestRoundData();
-        string memory imageUri = lowImageUri;
+        string memory imageUri = bearImageUri;
         if (price >= tokenIdToHighValue[tokenId]) {
-            imageUri = highImageUri;
+            imageUri = bullImageUri;
         }
         return
             string.concat(
@@ -59,8 +59,8 @@ contract DynamicSvgNft is ERC721 {
                 Base64.encode(
                     bytes(
                         abi.encodePacked(
-                            '{"name:":"}',
-                            name(),
+                            '{"name:":"',
+                            getName(),
                             '", "description":"An NFT that changes based on the Chainlink Deed.",',
                             '"attributes":[{"trait_type": "coolness", "value": 100}], "image":"',
                             imageUri,
@@ -69,5 +69,21 @@ contract DynamicSvgNft is ERC721 {
                     )
                 )
             );
+    }
+
+    function getBearSvg() public view returns (string memory) {
+        return bearImageUri;
+    }
+
+    function getBullSvg() public view returns (string memory) {
+        return bullImageUri;
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return i_priceFeed;
+    }
+
+    function getName() public pure returns (string memory) {
+        return NAME;
     }
 }
